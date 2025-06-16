@@ -1,0 +1,32 @@
+name: Initial Repository Setup
+
+on:
+  push:
+    branches:
+      - main
+      - master
+    paths:
+      - '.github/workflows/setup.yml'
+
+jobs:
+  minimal-setup:
+    if: github.repository != 'EnderModuBot/template'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Enable branch auto-deletion via API
+        run: |
+          curl -s -X PATCH "https://api.github.com/repos/${{ github.repository }}" \
+            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github+json" \
+            -d '{"delete_branch_on_merge":true}' | jq
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Delete this workflow file
+        run: |
+          git config --global user.name "setup-bot"
+          git config --global user.email "setup@github.com"
+          git rm .github/workflows/setup.yml
+          git commit -m "chore: remove setup workflow"
+          git push
