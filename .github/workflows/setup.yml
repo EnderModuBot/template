@@ -25,17 +25,15 @@ jobs:
         run: |
           owner_repo="${{ github.repository }}"
           issue_title="Enable repository merge settings"
-          issue_body="Please go to [repository settings](https://github.com/${owner_repo}/settings#merge-button-settings) and configure the following:\n\n- [ ] Automatically delete head branches\n- [ ] Allow auto-merge"
+          issue_body=$(
+            echo -e "Please go to [repository settings](https://github.com/${owner_repo}/settings#merge-button-settings) and configure the following:\n\n- [ ] Automatically delete head branches\n- [ ] Allow auto-merge"
+          )
 
           curl -s -X POST \
             -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
             -H "Accept: application/vnd.github+json" \
-            -d "$(jq -n \
-              --arg title "$issue_title" \
-              --arg body "$issue_body" \
-              '{title: $title, body: $body}')" \
+            -d "{\"title\":\"$issue_title\",\"body\":\"$issue_body\"}" \
             "https://api.github.com/repos/${owner_repo}/issues"
-
       - name: Create / update default issue labels
         shell: bash
         run: |
