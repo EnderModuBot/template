@@ -14,6 +14,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
       - name: Enable branch auto-deletion via API
         run: |
           curl -s -X PATCH "https://api.github.com/repos/${{ github.repository }}" \
