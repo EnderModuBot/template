@@ -21,12 +21,17 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Enable branch auto-deletion
+      - name: Create issue to enable branch auto-deletion
         run: |
-          curl -s -X PATCH "https://api.github.com/repos/${{ github.repository }}" \
-               -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-               -H "Accept: application/vnd.github+json" \
-               -d '{"delete_branch_on_merge":true}'
+          owner_repo="${{ github.repository }}"
+          issue_title="Enable 'Automatically delete head branches' setting"
+          issue_body="Please go to [repository settings](https://github.com/${owner_repo}/settings#merge-button-settings) and enable **Automatically delete head branches**."
+
+          curl -s -X POST \
+            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github+json" \
+            -d "{\"title\":\"${issue_title}\",\"body\":\"${issue_body}\"}" \
+            "https://api.github.com/repos/${owner_repo}/issues"
 
       - name: Create / update default issue labels
         shell: bash
