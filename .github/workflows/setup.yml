@@ -21,19 +21,21 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Create issue to enable repository merge settings
+      - name: Replace placeholders in issue template
+        env:
+          OWNER: ${{ github.repository_owner }}
+          REPO: ${{ github.event.repository.name }}
         run: |
-          owner_repo="${{ github.repository }}"
-          issue_title="Enable repository merge settings"
-          issue_body=$(
-            echo -e "Please go to [repository settings](https://github.com/${owner_repo}/settings#merge-button-settings) and configure the following:\n\n- [ ] Automatically delete head branches\n- [ ] Allow auto-merge"
-          )
+          sed -i "s|{{owner}}|$OWNER|g" .github/setup-reminder.md
+          sed -i "s|{{repo}}|$REPO|g" .github/setup-reminder.md
 
-          curl -s -X POST \
-            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-            -H "Accept: application/vnd.github+json" \
-            -d "{\"title\":\"$issue_title\",\"body\":\"$issue_body\"}" \
-            "https://api.github.com/repos/${owner_repo}/issues"
+      - name: Create setup reminder issue
+        uses: JasonEtco/create-an-issue@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          filename: .github/setup-reminder.md
+
       - name: Create / update default issue labels
         shell: bash
         run: |
