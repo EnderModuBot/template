@@ -11,6 +11,10 @@ source .venv/bin/activate
 pip install --upgrade pip
 pip install pre-commit
 
+if [ -f "requirements.txt" ]; then
+  pip install -r requirements.txt
+fi
+
 pre-commit install
 
-echo "Setup complete. pre-commit is active."
+echo "Setup complete"
