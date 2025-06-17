@@ -70,7 +70,7 @@ jobs:
         run: |
           git config --global user.name "setup-bot"
           git config --global user.email "setup@github.com"
-          git rm .github/workflows/setup.yml
-          git rm .github/setup-reminder.md
+          git rm -f .github/workflows/setup.yml
+          git rm -f .github/setup-reminder.md
           git commit -m "chore: remove setup workflow"
           git push
